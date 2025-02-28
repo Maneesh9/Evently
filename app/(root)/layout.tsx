@@ -4,7 +4,7 @@ import Header from "@/components/ui/shared/Header";
 
 
 export default function RootLayout({
-    children,
+    children
   }:{
     children: React.ReactNode;
   }) {

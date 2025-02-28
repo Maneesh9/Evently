@@ -2,8 +2,9 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { createUser,deleteUser,updateUser } from '@/lib/actions/user.actions'
-import { NextResponse } from 'next/server'
-import { clerkClient } from '@clerk/clerk-sdk-node'
+import { NextResponse } from 'next/server';
+import { clerkClient } from '@clerk/clerk-sdk-node';
+import { connectToDatabse } from '@/lib/database';
 
 
 export async function POST(req: Request) {
@@ -17,10 +18,10 @@ export async function POST(req: Request) {
   const wh = new Webhook(SIGNING_SECRET)
 
   // Get headers
-  const headerPayload = await headers()
-  const svix_id = headerPayload.get('svix-id')
-  const svix_timestamp = headerPayload.get('svix-timestamp')
-  const svix_signature = headerPayload.get('svix-signature')
+  const headerPayload = await headers();
+  const svix_id = headerPayload.get('svix-id');
+  const svix_timestamp = headerPayload.get('svix-timestamp');
+  const svix_signature = headerPayload.get('svix-signature');
 
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
@@ -30,10 +31,10 @@ export async function POST(req: Request) {
   }
 
   // Get body
-  const payload = await req.json()
-  const body = JSON.stringify(payload)
+  const payload = await req.json();
+  const body = JSON.stringify(payload);
 
-  let evt: WebhookEvent
+  let evt: WebhookEvent;
 
   // Verify payload with headers
   try {
@@ -60,12 +61,14 @@ export async function POST(req: Request) {
 
     const user = {
         clerkId: id,
-        email: email_addresses[0].email_address,
-        username: username!,
+        email: email_addresses?.[0]?.email_address || '',
+        username:username || `user_${id}`,
         firstName: first_name || " ",
         lastName:last_name || " ",
         photo: image_url,
     }
+    console.log('Saving user',user);
+    await connectToDatabse();
 
     const newUser= await createUser(user);
 
