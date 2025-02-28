@@ -5,6 +5,7 @@ import { createUser,deleteUser,updateUser } from '@/lib/actions/user.actions'
 import { NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import { connectToDatabse } from '@/lib/database';
+// import {User} from '@/lib/database/models/user.model'
 
 
 export async function POST(req: Request) {
